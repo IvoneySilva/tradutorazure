@@ -1,0 +1,31 @@
+import requests, uuid
+
+# Definir chave e endpoint
+subscription_key = 'sua-chave-aqui'
+endpoint = 'seu-endpoint-aqui'
+
+# Definir caminho e parâmetros da API
+path = '/translate?api-version=3.0'
+params = '&to=fr&to=es'  # Altere os idiomas conforme necessário
+constructed_url = endpoint + path + params
+
+# Cabeçalhos e corpo da requisição
+headers = {
+    'Ocp-Apim-Subscription-Key': subscription_key,
+    'Ocp-Apim-Subscription-Region': 'eastus',
+    'Content-type': 'application/json',
+    'X-ClientTraceId': str(uuid.uuid4())
+}
+
+# Texto a ser traduzido
+body = [{
+    'text': 'Create resource group'
+}]
+
+# Chamada à API
+request = requests.post(constructed_url, headers=headers, json=body)
+response = request.json()
+
+# Imprimir resultado
+for translation in response[0]['translations']:
+    print(f"Translation ({translation['to']}): {translation['text']}")

@@ -1,0 +1,94 @@
+
+
+Passo 1: Criar o Ambiente no Azure
+
+
+Criar um Grupo de Recursos no Azure
+Isso organiza os recursos necessários para a solução. 
+Execute o comando abaixo no Azure CLI para criar um grupo de recursos: 
+
+bash
+## código
+az group create --name MeuGrupoDeRecursos --location eastus
+Criar o Serviço de Tradução (Translator Text)
+O Translator Text é parte do Azure Cognitive Services e oferece suporte para tradução automática, com APIs que permitem personalização. Execute:
+
+bash
+## código
+az cognitiveservices account create --name NomeDoTradutor --resource-group MeuGrupoDeRecursos --kind TextTranslation --sku S1 --location eastus --yes
+Obter as Chaves e o Endpoint do Serviço
+Você precisará das chaves de autenticação e do endpoint para acessar o serviço de tradução:
+
+bash
+##código
+az cognitiveservices account keys list --name NomeDoTradutor --resource-group MeuGrupoDeRecursos
+Passo 2: Personalizar o Modelo de Tradução com o Custom Translator
+Criar um Projeto no Custom Translator
+No portal do Azure Custom Translator, crie um projeto específico para o domínio técnico do seu conteúdo, como "Engenharia de Software" ou "Redes de Computadores". Isso permitirá treinar o modelo com um vocabulário especializado.
+
+Carregar Glossários e Dados de Treinamento
+Carregue glossários com termos técnicos e traduções de referência. Arquivos de treinamento (como pares de frases de textos traduzidos anteriormente) ajudam o modelo a aprender o contexto técnico.
+
+Treinar e Avaliar o Modelo
+Treine o modelo e avalie sua precisão em textos técnicos. O Custom Translator permite ajustar o modelo até que ele alcance o nível de qualidade desejado.
+
+Passo 3: Integração com Aplicações (API do Translator)
+Configurar a API do Translator
+Com a API Translator, você pode traduzir conteúdo de forma programática. Abaixo está um exemplo de código em Python para tradução com a API do Translator:
+
+
+
+##código python:
+
+import requests, uuid
+
+# Definir chave e endpoint
+subscription_key = 'sua-chave-aqui'
+endpoint = 'seu-endpoint-aqui'
+
+# Definir caminho e parâmetros da API
+path = '/translate?api-version=3.0'
+params = '&to=fr&to=es'  # Altere os idiomas conforme necessário
+constructed_url = endpoint + path + params
+
+# Cabeçalhos e corpo da requisição
+headers = {
+    'Ocp-Apim-Subscription-Key': subscription_key,
+    'Ocp-Apim-Subscription-Region': 'eastus',
+    'Content-type': 'application/json',
+    'X-ClientTraceId': str(uuid.uuid4())
+}
+
+# Texto a ser traduzido
+body = [{
+    'text': 'Create resource group'
+}]
+
+# Chamada à API
+request = requests.post(constructed_url, headers=headers, json=body)
+response = request.json()
+
+# Imprimir resultado
+for translation in response[0]['translations']:
+    print(f"Translation ({translation['to']}): {translation['text']}")
+	
+	
+	
+	
+	
+Passo 4: Implementar e Testar a Solução
+
+Testar Traduções com o Modelo Personalizado
+Realize testes para verificar se o modelo traduz termos técnicos com precisão. Utilize uma variedade de exemplos de textos técnicos para garantir que o contexto está sendo respeitado.
+
+Ajustar o Glossário e Realizar Melhorias
+Caso encontre termos incorretos ou traduções ambíguas, ajuste o glossário no Custom Translator e reavalie o modelo.
+
+Passo 5: Disponibilizar a Solução
+Criar uma Interface Web ou Aplicativo
+Para usuários finais, você pode criar uma interface que aceita o texto técnico e retorna a tradução.
+
+Monitorar e Atualizar o Modelo
+Periodicamente, reavalie a precisão do modelo com novos dados técnicos e ajuste o glossário para incorporar novos termos.
+
+Com essa abordagem, você implementa uma solução que oferece traduções automáticas para conteúdos técnicos de maneira robusta e confiável, garantindo a precisão terminológica essencial no contexto técnico.
