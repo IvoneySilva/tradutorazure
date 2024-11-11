@@ -1,0 +1,2 @@
+# tradutorazure
+TradutorAzure
